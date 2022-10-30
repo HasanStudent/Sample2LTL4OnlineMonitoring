@@ -99,13 +99,23 @@ class RuntimeTraces:
             print('End ' + str(a))
             a += 1
 
+    def deleteSplitTraces(self, path='RunTimeTest/BeiPartTest/'):
+        path_dir = path
+        a = 1
+        for _ in self.splitTraces:
+            if os.path.exists(path_dir + str(a) + '.trace'):
+                os.remove(path_dir + str(a) + '.trace')
+            a += 1
+
 
 #Test: All traces is equal to main traces
 if __name__ == "__main__":
     test: ExperimentTraces
     test = parseExperimentTraces("../traces/finite/5pc_misclass/disjunctionOfExistence/0003.trace")
 
-    a = RuntimeTraces(test)
+    a2 = RuntimeTraces(test)
+    a2.writeAllSplitTraces('../RunTimeTest/BeiPartTest/')
+    a2.deleteSplitTraces('../RunTimeTest/BeiPartTest/')
     #a.runExperiment()
     '''
     for i in range(len(a.splitTraces)):
