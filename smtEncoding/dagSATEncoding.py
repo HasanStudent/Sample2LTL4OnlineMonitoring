@@ -43,7 +43,8 @@ class DagSATEncoding:
 
         self.listOfVariables = [i for i in range(self.traces.numVariables)]
 
-
+        #Add for dynamic read traces
+        self.solver = None
 
 
         #keeping track of which positions in a tree (and in time) are visited, so that constraints are not generated twice
@@ -141,6 +142,102 @@ class DagSATEncoding:
             if optimize == 'ratio':
                 # balance = 1/self.traces.negative.weight
                 balance = self.traces.positive.weight
+            for traceIdx, trace in enumerate(self.traces.rejectedTraces, start=len(self.traces.acceptedTraces)):
+                self.solver.add_soft(
+                    Not(self.y[(self.formulaDepth - 1, traceIdx, 0)]),
+                    weight=trace.weight * balance,
+                    id="count",
+                )
+        else:
+            msg = f'optimize={optimize!r}'
+            raise NotImplementedError(msg)
+
+    def DynamicEncodeFormula(self,
+        # unsatCore=True,
+        optimize=None,
+        solver=None,
+        num=0,
+    ):
+        self.operatorsAndVariables = self.listOfOperators + self.listOfVariables
+
+        self.x = {
+            (i, o): Bool(f'x_{i}_{o}')
+            for i in range(self.formulaDepth)
+            for o in self.operatorsAndVariables
+        }
+        self.l = {
+            (parentOperator, childOperator): Bool(f'l_{parentOperator}_{childOperator}')
+            for parentOperator in range(1, self.formulaDepth)
+            for childOperator in range(parentOperator)
+        }
+        self.r = {
+            (parentOperator, childOperator): Bool(f'r_{parentOperator}_{childOperator}')
+            for parentOperator in range(1, self.formulaDepth)
+            for childOperator in range(parentOperator)
+        }
+
+        self.y = {
+            (i, traceIdx, positionInTrace): Bool(f'y_{i}_{traceIdx}_{positionInTrace}')
+            for i in range(self.formulaDepth)
+            for traceIdx, trace in enumerate(self.traces)
+            for positionInTrace in range(trace.lengthOfTrace)
+        }
+
+        self.optimize = optimize
+        print(f"Optimize value: {optimize}")
+        if solver is None:
+            if self.optimize is None:
+                self.solver = Solver()
+            else:
+                self.solver = Optimize()
+        else:
+            print("Alt solver has set")
+            self.solver = solver
+        # self.solver.set(unsat_core=unsatCore) # Optimize don't have this option
+
+        if solve is None:
+            self.exactlyOneOperator()
+            self.firstOperatorVariable()
+
+            self.propVariablesSemantics()
+
+            self.operatorsSemantics()
+            self.noDanglingVariables()
+
+        if optimize is None:
+            self.solver.assert_and_track(
+                And([
+                     self.y[(self.formulaDepth - 1, traceIdx, 0)]
+                     for traceIdx, trace in enumerate(self.traces.acceptedTraces)
+                ]),
+                f'accepted traces should be accepting: {num}'
+            )
+
+            self.solver.assert_and_track(
+                And([
+                    Not(self.y[(self.formulaDepth - 1, traceIdx, 0)])
+                    for traceIdx, trace in enumerate(self.traces.rejectedTraces, start=len(self.traces.acceptedTraces))
+                ]),
+                f'rejecting traces should be rejected: {num}'
+                )
+        elif optimize in ['count', 'ratio']:
+            if optimize == 'count':
+                # balance = 1/self.traces.weight
+                balance = 1
+            if optimize == 'ratio':
+                # balance = 1/self.traces.positive.weight
+                balance = self.traces.negative.weight
+
+            for traceIdx, trace in enumerate(self.traces.acceptedTraces):
+                self.solver.add_soft(
+                    self.y[(self.formulaDepth - 1, traceIdx, 0)],
+                    weight=trace.weight * balance,
+                    id="count",
+                )
+            if optimize == 'ratio':
+                # balance = 1/self.traces.negative.weight
+                balance = self.traces.positive.weight
+
             for traceIdx, trace in enumerate(self.traces.rejectedTraces, start=len(self.traces.acceptedTraces)):
                 self.solver.add_soft(
                     Not(self.y[(self.formulaDepth - 1, traceIdx, 0)]),
