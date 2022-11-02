@@ -64,6 +64,20 @@ def test_3(dynTrace: RuntimeTraces):
                                       )
     print(f"formulas: {[f.prettyPrint() for f in formulas]}, timePassed: {timePassed}")
 
+def test_4(dynTrace: RuntimeTraces):
+    for i, traces in enumerate(dynTrace.splitTraces):
+
+        formulas, timePassed = run_solver(traces=traces,
+                                          startDepth=1, maxDepth=float("inf"), step=1,
+                                          optimizeDepth=float("inf"),
+                                          optimize="count", minScore=0,
+                                          maxNumModels=1,
+                                          timeout=float("inf"),
+                                          )
+        print(f"This is {i+1} Trace:")
+        print(f"formulas: {[f.prettyPrint() for f in formulas]}, timePassed: {timePassed}")
+
+
 #Test: All traces is equal to main traces
 if __name__ == "__main__":
     test: ExperimentTraces
@@ -71,8 +85,14 @@ if __name__ == "__main__":
 
     a = RuntimeTraces(test)
 
+    print("Test 4")
+    print("")
+    test_4(a)
 
-    test_2(a)
+    print("")
+    print("Test 2")
+    print("")
+    test_3(a)
     '''
     mfg = DagSATEncoding(1, test)
     print("\n\n\n\n")
