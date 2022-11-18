@@ -81,18 +81,21 @@ def test_4(dynTrace: RuntimeTraces):
 #Test: All traces is equal to main traces
 if __name__ == "__main__":
     test: ExperimentTraces
-    test = parseExperimentTraces("traces/finite/5pc_misclass/disjunctionOfExistence/0003.trace")
-
+    #test = parseExperimentTraces("traces/finite/5pc_misclass/disjunctionOfExistence/0003.trace")
+    test = parseExperimentTraces("traces/generated/5to10OneThree/0002.trace")
     a = RuntimeTraces(test)
 
-    print("Test 4")
-    print("")
-    test_4(a)
+    for i, trace in enumerate(test):
+        print(f"{i} \n{trace.traceVector}")
+    print(test.acceptedTraces)
+    #print("Test 4")
+    #print("")
+    #test_4(a)
 
     print("")
-    print("Test 2")
+    print("Test 3")
     print("")
-    test_3(a)
+    #test_3(a)
     '''
     mfg = DagSATEncoding(1, test)
     print("\n\n\n\n")
