@@ -70,5 +70,5 @@ def test_all_traces_in_List():
     # Test result
     print(c == s)
 
-if __name__ == "__main__":
-    test_all_traces_in_List()
+#if __name__ == "__main__":
+    #test_all_traces_in_List()
