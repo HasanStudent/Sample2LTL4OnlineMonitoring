@@ -9,7 +9,7 @@ def list_of_trace(trace):
 
 # Encode the Data from Simulator
 def encode(item, traces: ExperimentTraces, newTrace):
-    #
+    # After Classification has send. newTrace has to arrived to able reading the next record
     if newTrace is not None:
         traces.acceptedTraces.append(newTrace)
 
