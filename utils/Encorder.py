@@ -8,12 +8,17 @@ def list_of_trace(trace):
     return val
 
 # Encode the Data from Simulator
-def encode(item, traces: ExperimentTraces):
+def encode(item, traces: ExperimentTraces, newTrace):
+    #
+    if newTrace is not None:
+        traces.acceptedTraces.append(newTrace)
+
     # Start point is the Sample is Empty, so no data has encoded recently
-    if traces.acceptedTraces.__len__():
+    if traces.acceptedTraces.__len__() == 0:
         tmp = [item]
         trace = Trace(tmp)
         traces.acceptedTraces.append(trace)
+        traces.numVariables = trace.numVariables
     else:
         # Get the last edit Trace number
         l = traces.acceptedTraces.__len__()
@@ -31,9 +36,13 @@ def encode(item, traces: ExperimentTraces):
             # Case labeled is rejected, save edit Trace into rejected Traces
             if item == "reject":
                 traces.rejectedTraces.append(trace)
+                traces.acceptedTraces.pop(l-1)
             # New Empty Trace is append to Traces, for correctness that the Encoder work on the right one.
+            trace = Trace(tmp)
             trace.traceVector = []
-            traces.acceptedTraces.append(trace)
+            trace.lengthOfTrace = 0
+            return trace
+    return None
 
 #if __name__ == "__main__":
 

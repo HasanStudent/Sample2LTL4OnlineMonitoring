@@ -1,3 +1,4 @@
+'''
 import random
 
 from utils.Traces import ExperimentTraces, parseExperimentTraces, Trace
@@ -111,7 +112,7 @@ def test_encoder(data):
     return traces.acceptedTraces
 
 if __name__ == "__main__":
-    traces = parseExperimentTraces("traces/finite/5pc_misclass/disjunctionOfExistence/0003.trace")
+    traces = parseExperimentTraces("../traces/finite/5pc_misclass/disjunctionOfExistence/0003.trace")
     #traces = parseExperimentTraces("traces/generated/5to10OneThree/0002.trace")
     #print(traces.acceptedTraces)
     #print(traces.acceptedTraces[0].traceVector[0])
@@ -125,6 +126,7 @@ if __name__ == "__main__":
     print(val)
 
     '''
+'''
     p = "hallo;" + str(traces.acceptedTraces[0].traceVector[0])[1:len(str(traces.acceptedTraces[0].traceVector[0]))-1]
     print(p)
 
