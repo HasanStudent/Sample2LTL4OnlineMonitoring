@@ -2,6 +2,7 @@ import random
 
 from utils.Traces import ExperimentTraces, parseExperimentTraces, Trace
 
+# Copy a the positiv and negativ Traces to new Traces
 def copy_traces(traces: ExperimentTraces):
     val = ExperimentTraces()
     val.acceptedTraces = []
@@ -14,6 +15,7 @@ def copy_traces(traces: ExperimentTraces):
     val.numVariables = traces.numVariables
     return val
 
+# Convert a not finite Trace into a finite Trace
 def traces2finite(traces: ExperimentTraces, n):
     for trace in traces.acceptedTraces:
         if trace.lassoStart is not None:
@@ -22,10 +24,23 @@ def traces2finite(traces: ExperimentTraces, n):
                 trace.traceVector += tmp
             trace.lassoStart = None
 
+# Result list is getting all Records
 def append_records(trace: list, result: list):
     for r in trace:
         result.append(r)
 
+# Result list is getting the trace and his classification label
+def trace_from_data(traces: ExperimentTraces, result: list, label):
+    if label == "reject":
+        append_records(traces.rejectedTraces[0].traceVector, result)
+        result.append(label)
+        traces.rejectedTraces.pop(0)
+    else:
+        append_records(traces.acceptedTraces[0].traceVector, result)
+        result.append(label)
+        traces.acceptedTraces.pop(0)
+
+# Create a random list from Traces
 def traces2random_list(traces: ExperimentTraces, n):
 
     # Format the traces to a finite set
@@ -37,22 +52,22 @@ def traces2random_list(traces: ExperimentTraces, n):
     # list of sending records or classification
     result = []
 
-    #Go to all Traces
+    # Go to all Traces
     while len(data.acceptedTraces) > 0 or len(data.rejectedTraces) > 0:
+        # Random number to choose a Trace
         rand_i = random.randint(0, 1)
 
+        # negative labeled Traces has chosen
         if rand_i == 0:
             if len(data.rejectedTraces) > 0:
-                append_records(data.rejectedTraces[0].traceVector, result)
-                result.append("reject")
-                data.rejectedTraces.pop(0)
+                trace_from_data(data, result, "reject")
+        # positive labeled Trace has chosen
         else:
             if len(data.acceptedTraces) > 0:
-                append_records(data.acceptedTraces[0].traceVector, result)
-                result.append("accept")
-                data.acceptedTraces.pop(0)
+                trace_from_data(data, result, "accept")
 
     return result
+
 # Test: if all traces of the sample is in the random list (by count the both size of traces)
 def test_all_traces_in_List():
     # Read traces
@@ -70,5 +85,5 @@ def test_all_traces_in_List():
     # Test result
     print(c == s)
 
-#if __name__ == "__main__":
-    #test_all_traces_in_List()
+if __name__ == "__main__":
+    test_all_traces_in_List()
