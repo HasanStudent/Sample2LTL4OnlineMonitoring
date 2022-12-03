@@ -8,7 +8,7 @@ def list_of_trace(trace):
     return val
 
 # Encode the Data from Simulator
-def encode(item, traces: ExperimentTraces, newTrace):
+def convert(item, traces: ExperimentTraces, newTrace):
     # After Classification has send. newTrace has to arrived to able reading the next record
     if newTrace is not None:
         traces.acceptedTraces.append(newTrace)

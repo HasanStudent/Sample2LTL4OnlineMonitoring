@@ -24,6 +24,12 @@ def traces2finite(traces: ExperimentTraces, n):
                 trace.traceVector += tmp
             trace.lassoStart = None
 
+    for trace in traces.rejectedTraces:
+        if trace.lassoStart is not None:
+            tmp = trace.traceVector[trace.lassoStart:]
+            for i in range(n):
+                trace.traceVector += tmp
+            trace.lassoStart = None
 # Result list is getting all Records
 def append_records(trace: list, result: list):
     for r in trace:
